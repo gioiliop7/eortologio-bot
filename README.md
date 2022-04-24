@@ -5,6 +5,7 @@ Eortologio Bot is a bot that sends you everyday a message about the Greek Nameda
 Data is parsed with RSS from https://www.greeknamedays.gr/
 
 [Try](https://discord.com/api/oauth2/authorize?client_id=967419667377442887&permissions=534723951680&scope=bot) the bot on your server.
+* In order to bot working on your server, you must create a channel named "eortologio"
 
 ## Installation
 
