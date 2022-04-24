@@ -22,7 +22,7 @@ const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 let scheduledMessage = new cron.CronJob("0 9 * * *", () => {
   (async () => {
     const ch = client.channels.cache.find(
-      (channel) => channel.name === "general"
+      (channel) => channel.name === "eortologio"
     );
     let feed = await parser.parseURL(
       "https://www.greeknamedays.gr/tools/eortologiorssfeed/index.php?langid=gr"
