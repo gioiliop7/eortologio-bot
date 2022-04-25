@@ -55,3 +55,6 @@ node index.js
 
 ## Contributing
 Feel free to suggest anything in order to improve the project.
+
+## Need to
+I need to thank my friend [eliac7](https://www.iliasdev.eu/) about his help to host the bot and make it online. Check his bots and projects [here](https://github.com/eliac7).
