@@ -19,34 +19,40 @@ weekday[6] = "Σάββατο";
 
 const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
-let scheduledMessage = new cron.CronJob("0 9 * * *", () => {
-  (async () => {
-    const ch = client.channels.cache.find(
-      (channel) => channel.name === "eortologio"
-    );
-    let feed = await parser.parseURL(
-      "https://www.greeknamedays.gr/tools/eortologiorssfeed/index.php?langid=gr"
-    );
-    feed.items.forEach((item) => {
-      let rssTitle = item.title;
-      rssTitle = rssTitle.split(":");
-      rssTitle = rssTitle[1];
-      const d=new Date();
-      const day = d.getDay();
-      const date = d.getDate();
-      const month = months[d.getMonth()];
-      const year = d.getFullYear();
-      const dayString = weekday[day];
-      let today;
-      if (rssTitle.includes('Δεν')){
-        today = `❌ ${dayString},${date}/${month}/${year} ➡️`;
-      }else{
-        today = `🎁 ${dayString},${date}/${month}/${year} ➡️ `;
-      }
-      ch.send({ content: today + rssTitle });
-    });
-  })();
-});
+let scheduledMessage = new cron.CronJob(
+  "0 9 * * *",
+  () => {
+    (async () => {
+      const ch = client.channels.cache.find(
+        (channel) => channel.name === "eortologio"
+      );
+      let feed = await parser.parseURL(
+        "https://www.greeknamedays.gr/tools/eortologiorssfeed/index.php?langid=gr"
+      );
+      feed.items.forEach((item) => {
+        let rssTitle = item.title;
+        rssTitle = rssTitle.split(":");
+        rssTitle = rssTitle[1];
+        const d = new Date();
+        const day = d.getDay();
+        const date = d.getDate();
+        const month = months[d.getMonth()];
+        const year = d.getFullYear();
+        const dayString = weekday[day];
+        let today;
+        if (rssTitle.includes("Δεν")) {
+          today = `❌ ${dayString},${date}/${month}/${year} ➡️`;
+        } else {
+          today = `🎁 ${dayString},${date}/${month}/${year} ➡️ `;
+        }
+        ch.send({ content: today + rssTitle });
+      });
+    })();
+  },
+  null,
+  true,
+  "Europe/Athens"
+);
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
