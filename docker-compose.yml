@@ -5,6 +5,7 @@ services:
     build: .
     environment:
       - CLIENT_TOKEN
+      - TZ=Europe/Athens  # Set the timezone to Athens
     ports:
       - "8081:3000"
     restart: always
