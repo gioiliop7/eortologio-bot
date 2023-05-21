@@ -1,66 +1,59 @@
-let Parser = require("rss-parser");
-let parser = new Parser();
-
-require("dotenv").config(); //initialize dotenv
-const Discord = require("discord.js"); //import discord.js
+const Parser = require("rss-parser");
+const Discord = require("discord.js");
 const cron = require("cron");
+require("dotenv").config();
+
+const parser = new Parser();
 const client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS],
 });
 
-let weekday = new Array(7);
-weekday[0] = "Κυριακή";
-weekday[1] = "Δευτέρα";
-weekday[2] = "Τρίτη";
-weekday[3] = "Τετάρτη";
-weekday[4] = "Πέμπτη";
-weekday[5] = "Παρασκευή";
-weekday[6] = "Σάββατο";
+const weekdays = [
+  "Κυριακή",
+  "Δευτέρα",
+  "Τρίτη",
+  "Τετάρτη",
+  "Πέμπτη",
+  "Παρασκευή",
+  "Σάββατο",
+];
 
-const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const months = [
+  "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"
+];
 
-let scheduledMessage = new cron.CronJob(
-  "0 9 * * *",
-  () => {
-    (async () => {
-      const ch = client.channels.cache.find(
-        (channel) => channel.name === "eortologio"
-      );
-      let feed = await parser.parseURL(
-        "https://www.greeknamedays.gr/tools/eortologiorssfeed/index.php?langid=gr"
-      );
-      feed.items.forEach((item) => {
-        let rssTitle = item.title;
-        rssTitle = rssTitle.split(":");
-        rssTitle = rssTitle[1];
-        const d = new Date();
-        const day = d.getDay();
-        const date = d.getDate();
-        const month = months[d.getMonth()];
-        const year = d.getFullYear();
-        const dayString = weekday[day];
-        let today;
-        if (rssTitle.includes("Δεν")) {
-          today = `❌ ${dayString},${date}/${month}/${year} ➡️`;
-        } else {
-          today = `🎁 ${dayString},${date}/${month}/${year} ➡️ `;
-        }
-        ch.send({ content: today + rssTitle });
-      });
-    })();
+const scheduleMessage = new cron.CronJob({
+  cronTime: "0 9 * * *",
+  onTick: async () => {
+    const channel = client.channels.cache.find((channel) => channel.name === "eortologio");
+    const feed = await parser.parseURL("https://www.greeknamedays.gr/tools/eortologiorssfeed/index.php?langid=gr");
+
+    feed.items.forEach((item) => {
+      let rssTitle = item.title.split(":")[1];
+      const currentDate = new Date();
+      const day = currentDate.getDay();
+      const date = currentDate.getDate();
+      const month = months[currentDate.getMonth()];
+      const year = currentDate.getFullYear();
+      const dayString = weekdays[day];
+
+      let today;
+      if (rssTitle.includes("Δεν")) {
+        today = `❌ ${dayString},${date}/${month}/${year} ➡️`;
+      } else {
+        today = `🎁 ${dayString},${date}/${month}/${year} ➡️ `;
+      }
+
+      channel.send({ content: today + rssTitle });
+    });
   },
-  null,
-  true,
-  "Europe/Athens"
-);
+  timeZone: "Europe/Athens"
+});
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setActivity("Greek namedays and inform you❤️", {
-    type: "WATCHING",
-  });
-  scheduledMessage.start();
+  client.user.setActivity("Greek namedays and inform you❤️", { type: "WATCHING" });
+  scheduleMessage.start();
 });
 
-//make sure this line is the last line
-client.login(process.env.CLIENT_TOKEN); //login bot using token
+client.login(process.env.CLIENT_TOKEN);
